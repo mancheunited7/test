@@ -101,6 +101,9 @@ resourcesメソッドを使用しない場合、URLとアクションを一つ�
 get ‘/blogs’,     to: ‘blogs#index’
 get ‘/blogs/new’, to: ‘blogs#new’
 get ‘/blogs/:id’, to: ‘blogs#show'
+・
+・
+・
 ```
 
 resourcesメソッドを使用した場合は、`resources :blogs`の１行記述するのみでルーティングが作成されますので、簡潔に簡単に実装できるというメリットが、resourcesメソッドにはあります。
@@ -128,17 +131,17 @@ end
 
 最後に、Viewを作成します。
 
-BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すので、`blogs/new.html.erb`を作成する必要があります。
+BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すので、`new.html.erb`を作成する必要があります。
 
-### form_with
+### form_withメソッド
 
 `blogs/new.html.erb`ファイルが作成できたところで、実際にフォームを作成していきますが、モデルと関連付けたフォームを作成するには、`form_with`メソッドがとても便利です。
 
-`form_with`メソッドは、ビューヘルパーの一種で、フォームの作成を簡単にします。
+`form_with`メソッドは、ヘルパーメソッドの一つで、フォームの作成を簡単にします。
 
 ```
 Rails 5.1より前のバージョンでは、【form_for】と【form_tag】の2種類のメソッドがありましたが、
-Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後はform_withメソッドを使用しましょう。
+Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後は【form_with】メソッドを使用しましょう。
 ```
 
 `form_forとform_tagのform_withへの統合（Railsガイド）`
@@ -165,7 +168,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 </form>
 ```
 
-ビューヘルパーである`form_with`メソッドを使用することで、以下のように簡単に記述できます。
+`form_with`メソッドを使用すると、以下のように簡単に記述できます。
 
 ```html
 <%= form_with(model: Blog.new) do |form| %>
@@ -203,7 +206,7 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 
 ### フォーム作成
 
-今までのことを踏まえ、`blogs/new.html.erb`にフォームを作成してみましょう。
+今までのことを踏まえ、`blogs/new.html.erb`にブログの新規画面フォームを作成してみましょう。
 
 `app/views/blogs/new.html.erb`
 
@@ -221,7 +224,9 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 <% end %>
 ```
 
-`<%= form_with(model: Blog.new, local: true) do |form| %>`form_withメソッドには、Blog.new、つまりブログモデルのインスタンスを引数として渡しています。そうすることで、`<form class="new_blog" id="new_blog" action="/blogs" accept-charset="UTF-8" method="post">`のように、POSTメソッドで`/blogs`URLにリクエストを送信するフォームを作成することができます。
+`<%= form_with(model: Blog.new, local: true) do |form| %>`
+form_withメソッドには、Blog.new、つまりブログモデルのインスタンスを引数として渡しています。
+そうすることで、`<form class="new_blog" id="new_blog" action="/blogs" accept-charset="UTF-8" method="post">`のように、POSTメソッドで`/blogs`URLにリクエストを送信するフォームを作成することができます。
 
 また、`form_with`メソッドは、デフォルトでJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを生成するようにします。(難しいので、この時点で理解できなくても問題ありません。)
 
