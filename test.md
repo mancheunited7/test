@@ -2,24 +2,24 @@
 
 ## 今回のテーマ
 
-```
-以下のようなフォームを作成できること
+以下のような、ブログを作成するための新規画面のフォームを作成する
 
 [![https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65](https://t.gyazo.com/teams/diveintocode/f661a7b7cdf1e4e058077ccef3e20a65.png)](https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65)
-```
 
 ## 章の内容
+ブログを作成するための新規画面（`new`）に必要な
 
-- ブログを作成するための新規画面（`new`）をRESTfulに沿って実装する。
-- 新規画面のフォームを`form_withメソッド`を使用して実装する。
+- ルーティングをRESTfulに沿って実装する。
+- アクション(new)を実装する。
+- 新規画面のフォームを`form_with`メソッドを使用して実装する。
 
 ## RESTfulとは
 
-RESTfulを「REST」と「ful」に分けて考えると、
+RESTfulを「REST」と「ful」に分けて考えます。
 
-「REST」は、CRUD機能をHTTPメソッドと組み合わせて自由に操作できるようにする、ことを意味しています。
+「REST」は、`CRUD機能をHTTPメソッドと組み合わせて自由に操作できるようにすること`を意味しています。
 
-「ful」は、◯◯の性質を持っている、という意味になります。
+「ful」は、`◯◯の性質を持っている`という意味になります。
 
 よって、RESTfulとは、`CRUD機能を自由に操作できる性質を持った考え方`、ということが言えます。
 
@@ -32,14 +32,13 @@ Newには、次の役割があります。
 - 新規画面を表示させる
 - 入力された値をcreateに送る
 
-Newの機能を実現するために、ブラウザからリクエストがきて処理を行うRouting→Controller→Viewの順でコードを実装していきます。今回Modelの実装はありません。
+Newの機能を実現するために、Routing → Controller → Viewの順でコードを実装していきます。今回Modelの実装は、ありません。
 
 ### Routing
 
 まずは、ルーティング機能から作成しましょう。
 
-新規作成画面のルーティングを作成するために、`resourcesメソッド`を使用します。
-routes.rbファイルに、以下のように記述します。
+新規画面のルーティングを作成するために、`resources`メソッドを使用します。
 
 `config/routes.rb`
 
@@ -50,12 +49,14 @@ Rails.application.routes.draw do
 end
 ```
 
-#### resources
+#### resourcesメソッド
 
 `resourcesメソッドについて（Railsガイド）`
+
 https://railsguides.jp/routing.html#crud%E3%80%81%E5%8B%95%E8%A9%9E%E3%80%81%E3%82%A2%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3
 
-resourcesメソッドとは、RESTfulなルーティングを自動生成するもの。
+resourcesメソッドとは、RESTfulなルーティングを自動生成するメソッドです。
+
 実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
 
 ```
@@ -79,17 +80,19 @@ index/create/new/edit/show/update/destroyそれぞれのアクションへのル
 
 ここで、`rails routes`コマンドで表示された、結果の見方を説明します。
 
-`Prefix`は、URLを簡単に表現した名称
+```
+Prefixは、URLを簡単に表現した名称のことです。
 
-`Prefix`を使用すると、link_toメソッド、renderメソッド、redirectメソッドが必要とするパスを簡単に記述できるというメリットがある。
+Prefixを使用すると、link_toメソッド、renderメソッド、redirectメソッドが必要とするパスを簡単に記述できるというメリットがあります。
 
-`Verb`は、HTTPメソッド
+Verbは、リクエストでくるHTTPメソッドを示しています
 
-`URI Pattern`は、リクエストURL
+URI Patternは、リクエストURLを示しています。
 
-`Controller#Action`は、関連づけされたコントローラ名とアクション名
+Controller#Actionは、関連付けされたコントローラ名とアクション名を示しています。
 
-例えば、`GET`メソッドで、`/blogs/new`のURLでリクエストが来た場合、Blogsコントローラーのnewアクションを選択するルーティングが作成できた、という見方ができます。
+例えば、GET`メソッドで、/blogs/newのURLでリクエストが来た場合、Blogsコントローラーのnewアクションを選択するルーティングが作成できた、という見方ができます。
+```
 
 [![https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51](https://t.gyazo.com/teams/diveintocode/7831da463339ea7bd5bc5290da60fe51.png)](https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51)
 
@@ -97,18 +100,18 @@ index/create/new/edit/show/update/destroyそれぞれのアクションへのル
 
 resourcesメソッドを使用しない場合、URLとアクションを一つ一つ紐付ける必要があります。紐付けるコードを実装するのは手間ですし、実装されたコードも煩雑になります。
 
-`resourcesメソッドを使用しない場合`
+`resourcesメソッドを使用しない場合のroutes.rb`
 
 ```
-get ‘/blogs’, to: ‘blogs#index’
+get ‘/blogs’,     to: ‘blogs#index’
 get ‘/blogs/new’, to: ‘blogs#new’
 get ‘/blogs/:id’, to: ‘blogs#show'
 ```
 
-resourcesメソッドを使用すると、先ほど実装したように、`１行`記述するだけですみます。
+resourcesメソッドを使用すると、先ほど実装したように`resources :blogs`の１行記述するのみとなります。
 簡潔に簡単に実装できるというメリットがresourcesメソッドにはあります。
 
-これで、ブログのCRUD機能に必要な、ルーティングを実装することができました。
+これで、ブログのCRUD機能に必要なルーティングを実装することができました。
 
 ### Controller
 
@@ -127,27 +130,27 @@ class BlogsController < ApplicationController
 end
 ```
 
-### Viewの作成
+### View
 
 最後に、Viewを作成します。
 
-BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すので、`blogs/new.html.erb`を作成します。
+BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すので、`blogs/new.html.erb`を作成する必要があります。
 
 ### form_with
 
-`blogs/new.html.erb`ファイルが作成できたところで、実際にフォームを作成していきますが、モデルと関連付けたフォームを作成するには、`form_withメソッド`がとても便利です。
+`blogs/new.html.erb`ファイルが作成できたところで、実際にフォームを作成していきますが、モデルと関連付けたフォームを作成するには、`form_with`メソッドがとても便利です。
 
-`form_withメソッド`は、ビューヘルパーの一種で、フォームの作成を簡単にします。
+`form_with`メソッドは、ビューヘルパーの一種で、フォームの作成を簡単にします。
 
 ```
-Rails 5.1より前のバージョンでは、`form_for`と`form_tag`の2種類がありましたが、
-Rails 5.1ではこの2つを`form_with`に統合してますので、今後は`form_with`メソッドを使用しましょう。
+Rails 5.1より前のバージョンでは、【form_for】と【form_tag】の2種類のメソッドがありましたが、Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後はform_withメソッドを使用しましょう。
+```
 
 `form_forとform_tagのform_withへの統合（Railsガイド）`
 https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AEform-with%E3%81%B8%E3%81%AE%E7%B5%B1%E5%90%88
-```
 
-例えば、次のフォームを作成しようとなると、
+
+例えば、次のフォームを作成しようとすると、
 
 [![https://diveintocode.gyazo.com/29f94c13d79371f31700c02cf95675e5](https://t.gyazo.com/teams/diveintocode/29f94c13d79371f31700c02cf95675e5.png)](https://diveintocode.gyazo.com/29f94c13d79371f31700c02cf95675e5)
 
@@ -166,7 +169,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 </form>
 ```
 
-ビューヘルパーである'form_withメソッド'を使用することで、以下のように簡単に記述できます。
+ビューヘルパーである`form_with`メソッドを使用することで、以下のように簡単に記述できます。
 
 ```html
 <%= form_with(model: Blog.new) do |form| %>
@@ -184,7 +187,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 
 #### form_withの引数
 
-先ほど作成したフォームで、'form_withメソッド’は、次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定しています。
+先ほど作成したフォームで、`form_with`メソッドは、次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定しています。
 
 ```
 <%= form_with(model: Blog.new) %>
@@ -202,13 +205,13 @@ Blogモデルのインスタンスであれば、ブログを作成するよう�
 <%= form_with(url: blogs_path, method: post) %>
 ```
 
-と記述するように、行き先URLとHTTPメソッドを個別に指定する必要があります。
+と、行き先URLとHTTPメソッドを個別に指定する必要があります。
 
 modelオプションを使用した方が、簡単でわかりやすいといったメリットがあります。
 
 ### フォーム作成
 
-今までのことをふまえ、`blogs/new.html.erb`にフォームを作成してみましょう。
+今までのことを踏まえ、`blogs/new.html.erb`にフォームを作成してみましょう。
 
 `app/views/blogs/new.html.erb`
 
@@ -228,11 +231,11 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 
 `<%= form_with(model: Blog.new, local: true) do |form| %>`form_withメソッドには、Blog.new、つまりブログモデルのインスタンスを引数として渡しています。そうすることで、`<form class="new_blog" id="new_blog" action="/blogs" accept-charset="UTF-8" method="post">`のように、POSTメソッドで`/blogs`URLにリクエストを送信するフォームを作成することができます。
 
-また、form_withメソッドは、デフォルトではJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを発行するようにします。(難しいので、この時点で理解できなくても問題ありません。)
+また、`form_with`メソッドは、デフォルトでJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを生成するようにします。(難しいので、この時点で理解できなくても問題ありません。)
 
 `do ~ end(ブロック)`の中に、用意されたメソッド`form.labelやform.submit`を使用することで、フォームに結びついたテキストフィールドやSubmitボタンを作成することが可能になります。
 
-最後に、formタグとしてHTMLコードを生成するために、form_withメソッドは、`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
+最後に、formタグとしてHTMLコードを生成するために、`form_with`メソッドは、`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
 
 #### 各フォームパーツのメソッドについて
 
@@ -245,7 +248,8 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 ### サーバーを起動し、確認する
 
 作成したビューを確認しましょう。
-ターミナルで、サーバー起動コマンドを実行し、`blogs/new`にアクセスします。
+
+ターミナルでサーバー起動コマンドを実行し、`blogs/new`にアクセスします。
 
 `rails s -b $IP -p $PORT`
 
