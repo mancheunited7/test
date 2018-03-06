@@ -2,7 +2,7 @@
 
 ## 今回のテーマ
 
-以下のような、ブログを作成するための新規画面のフォームを作成する
+以下のような、ブログを作成するための新規画面を作成する
 
 [![https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65](https://t.gyazo.com/teams/diveintocode/f661a7b7cdf1e4e058077ccef3e20a65.png)](https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65)
 
@@ -15,13 +15,11 @@
 
 ## RESTfulとは
 
-RESTfulを「REST」と「ful」に分けて考えます。
+RESTfulを直訳すると、「RESTな性質をもつ」といった意味になります。
 
-「REST」は、`CRUD機能をHTTPメソッドと組み合わせて自由に操作できるようにすること`を意味しています。
+ここで「REST」は、Webを設計するときのルールで、`リソースであるURLをHTTPメソッドと対応させることで、統一感のある分かりやすい設計にしよう`という決まりごとのことです。
 
-「ful」は、`◯◯の性質を持っている`という意味になります。
-
-よって、RESTfulとは、`CRUD機能を自由に操作できる性質を持った考え方`、ということが言えます。
+よって「RESTful」とは、`上記のような決まりごとを守っているもの`、と考えられます。
 
 さっそく、RESTfulな観点を意識し、`new`を実装していきましょう。
 
@@ -32,7 +30,7 @@ Newには、次の役割があります。
 - 新規画面を表示させる
 - 入力された値をcreateに送る
 
-Newの機能を実現するために、Routing → Controller → Viewの順でコードを実装していきます。今回Modelの実装は、ありません。
+Newの機能を実現するために、Routing → Controller → Viewの順でコードを実装していきます。今回Modelの実装はありません。
 
 ### Routing
 
@@ -80,19 +78,16 @@ index/create/new/edit/show/update/destroyそれぞれのアクションへのル
 
 ここで、`rails routes`コマンドで表示された、結果の見方を説明します。
 
-```
-Prefixは、URLを簡単に表現した名称のことです。
-
+`Prefix`は、URLを簡単に表現した名称のことです。
 Prefixを使用すると、link_toメソッド、renderメソッド、redirectメソッドが必要とするパスを簡単に記述できるというメリットがあります。
 
-Verbは、リクエストでくるHTTPメソッドを示しています
+`Verb`は、リクエストで送信されるHTTPメソッドを示しています
 
-URI Patternは、リクエストURLを示しています。
+`URI Pattern`は、リクエストURLを示しています。
 
-Controller#Actionは、関連付けされたコントローラ名とアクション名を示しています。
+`Controller#Action`は、関連付けされたコントローラ名とアクション名を示しています。
 
 例えば、GET`メソッドで、/blogs/newのURLでリクエストが来た場合、Blogsコントローラーのnewアクションを選択するルーティングが作成できた、という見方ができます。
-```
 
 [![https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51](https://t.gyazo.com/teams/diveintocode/7831da463339ea7bd5bc5290da60fe51.png)](https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51)
 
@@ -108,8 +103,7 @@ get ‘/blogs/new’, to: ‘blogs#new’
 get ‘/blogs/:id’, to: ‘blogs#show'
 ```
 
-resourcesメソッドを使用すると、先ほど実装したように`resources :blogs`の１行記述するのみとなります。
-簡潔に簡単に実装できるというメリットがresourcesメソッドにはあります。
+resourcesメソッドを使用した場合は、`resources :blogs`の１行記述するのみでルーティングが作成されますので、簡潔に簡単に実装できるというメリットが、resourcesメソッドにはあります。
 
 これで、ブログのCRUD機能に必要なルーティングを実装することができました。
 
@@ -143,10 +137,12 @@ BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Vi
 `form_with`メソッドは、ビューヘルパーの一種で、フォームの作成を簡単にします。
 
 ```
-Rails 5.1より前のバージョンでは、【form_for】と【form_tag】の2種類のメソッドがありましたが、Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後はform_withメソッドを使用しましょう。
+Rails 5.1より前のバージョンでは、【form_for】と【form_tag】の2種類のメソッドがありましたが、
+Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後はform_withメソッドを使用しましょう。
 ```
 
 `form_forとform_tagのform_withへの統合（Railsガイド）`
+
 https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AEform-with%E3%81%B8%E3%81%AE%E7%B5%B1%E5%90%88
 
 
@@ -195,10 +191,6 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 
 これは、Railsが、モデルオプションに設定したインスタンスを元に、行き先（どのようなリクエストを送るか）を自動で推測してくれます。
 
-[![https://diveintocode.gyazo.com/c6054cf6b7503342901c91afe5c37da1](https://t.gyazo.com/teams/diveintocode/c6054cf6b7503342901c91afe5c37da1.png)](https://diveintocode.gyazo.com/c6054cf6b7503342901c91afe5c37da1)
-
-Blogモデルのインスタンスであれば、ブログを作成するようなリクエストを、Userモデルのインスタンスであれば、ユーザーを作成するようなリクエストを自動的に作成してくれます。
-
 ここでmodelオプションを使用しない場合を考えると、
 
 ```
@@ -240,7 +232,9 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 #### 各フォームパーツのメソッドについて
 
 `form.label`はHTMLのlabelタグを作成するメソッドです。
+
 `form.text_field`は、属性(type)をtextに指定した、HTMLのinputタグを作成するメソッドです。
+
 `form.submit`は、属性(type)をsubmitに指定した、HTMLのinputタグを作成するメソッドです。value(ボタンに表示する名称)は、form_withに渡されたモデルクラスによって代わります。valueを変更する場合、オプションを指定する必要があります。
 
 それぞれをdivタグで囲んでいるのは、改行するためです。divタグもしくはbrタグで囲わないと横一列になります。
