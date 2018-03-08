@@ -2,12 +2,12 @@
 
 ## 今回のテーマ
 
-以下のような、ブログ作成用の新規画面を作成する
+以下のような、ブログの新規画面を作成する
 
 [![https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65](https://t.gyazo.com/teams/diveintocode/f661a7b7cdf1e4e058077ccef3e20a65.png)](https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65)
 
 ## 章の内容
-ブログ作成用の新規画面（`new`）に必要な
+ブログの新規画面（`new`）に必要な
 
 - ルーティングを`RESTful`に沿って実装する。
 - アクション(`new`)を実装する。
@@ -18,8 +18,6 @@
 RESTfulを直訳すると、「RESTな性質をもつ」といった意味になります。
 
 ここで「REST」とは、Webを構築するときの考え方の一つで、`リソースとなるURLをHTTPメソッドに対応させ、自由にCRUDできるものとして扱う考え方`といえます。
-
-よって「RESTful」とは、`上記のような決まりごとを守っているもの`、と考えられます。
 
 さっそく、RESTfulな観点を意識し、`new`を実装していきましょう。
 
@@ -34,7 +32,7 @@ Newには、次の役割があります。
 
 ### Routing
 
-まずは、ルーティング機能から作成しましょう。
+まずは、ルーティングから作成しましょう。
 
 新規画面のルーティングを作成するために、`resources`メソッドを使用します。
 
@@ -55,7 +53,7 @@ https://railsguides.jp/routing.html#crud%E3%80%81%E5%8B%95%E8%A9%9E%E3%80%81%E3%
 
 resourcesメソッドとは、RESTfulなルーティングを自動生成するメソッドです。
 
-`config/routes.rb`に`resources :blogs`を追記したあと、実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
+`config/routes.rb`に`resources :blogs`を追記したあと、実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。次のような結果が表示されます。
 
 ```
 dive_into_code:~/workspace/sample (master) $ rails routes
@@ -70,15 +68,13 @@ edit_blog GET    /blogs/:id/edit(.:format) blogs#edit
           DELETE /blogs/:id(.:format)      blogs#destroy
 ```
 
-index/create/new/edit/show/update/destroyそれぞれのアクションへのルーティングが生成されているのが分かります。
+index・create・new・edit・show・update・destroy、それぞれのアクションへのルーティングが生成されているのが分かります。
 
-resourcesメソッドを使用することで、RESTfulな7つのルーティングが自動的に生成されます。
-
-※updateへのroutingが2個生成されているのは、後の仕様でpatchが追加されたためです。特に気にする必要はありません。
+（updateへのroutingが2個生成されているのは、後の仕様でpatchが追加されたためです。特に気にする必要はありません。）
 
 ここで、`rails routes`コマンドで表示された、結果の見方を説明します。
 
-`Prefix`は、URLを簡単に表現した名称のことです。
+`Prefix`は、URLを簡略化した名称です。
 Prefixを使用すると、link_toメソッド、renderメソッド、redirectメソッドが必要とするパスを簡単に記述できるというメリットがあります。
 
 `Verb`は、リクエストで送信されるHTTPメソッドを示しています
@@ -106,9 +102,9 @@ get ‘/blogs/:id’, to: ‘blogs#show'
 ・
 ```
 
-resourcesメソッドを使用した場合は、`resources :blogs`の１行記述するのみでルーティングが作成されますので、簡潔に簡単に実装できるというメリットが、resourcesメソッドにはあります。
+resourcesメソッドを使用した場合は、`resources :blogs`の１行を記述するのみでルーティングが作成されますので、簡潔に簡単に実装できるというメリットが、resourcesメソッドにはあります。
 
-これで、新規画面に必要なルーティングを実装することができました。
+これで、ブログの新規画面に必要なルーティングを実装することができました。
 
 ### Controller
 
@@ -188,13 +184,13 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 
 #### form_withの引数
 
-`form_with`メソッドは、次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定しています。
+次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定します。
 
 ```
 <%= form_with(model: @blog) %>
 ```
 
-これは、Railsが、モデルオプションに設定したインスタンスを元に、行き先（どのようなリクエストを送るか）を自動で推測してくれます。
+こうすることで、Railsが、モデルオプションに設定したインスタンスを元に、行き先（どのようなリクエストを送るか）を自動で推測してくれます。
 
 逆にmodelオプションを使用しない場合を考えると、次のように、`行き先URL`と`HTTPメソッド`を個別に指定する必要があります。
 
@@ -227,16 +223,13 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 上から順にコードを見ていきましょう。
 
 `<%= form_with(model: @blog, local: true) do |form| %>`
+
 form_withメソッドのオプションには、modelオプションを指定します。
 引数として@blogを指定することで、Railsは自動的に`POST`メソッドで`/blogs`URLにリクエストを送信するフォームを作成します。
 
 また、`form_with`メソッドは、デフォルトでJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを生成するようにします。(難しいので、この時点で理解できなくても問題ありません。)
 
 `do ~ end`の中には、ラベルを生成する`form.label`、ボタンを生成する`form.submit`を使用することで、フォームに結びついたパーツを作成することができます。
-
-最後に、formタグとしてのHTMLコードを生成するために、`form_with`メソッドを`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
-
-#### 各フォームパーツのメソッドについて
 
 `form.label`はHTMLのlabelタグを生成するメソッドです。
 
@@ -245,6 +238,8 @@ form_withメソッドのオプションには、modelオプションを指定し
 `form.submit`は、属性(type)をsubmitに指定した、HTMLのinputタグを作成するメソッドです。value(ボタンに表示する名称)は、form_withに渡されたモデルクラスによって代わります。valueを変更する場合、オプションを指定する必要があります。
 
 それぞれをdivタグで囲んでいるのは、改行するためです。divタグもしくはbrタグで囲わないと横一列になります。
+
+最後に、formタグとしてのHTMLコードを生成するために、`form_with`メソッドを`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
 
 ### サーバーを起動し、確認する
 
@@ -262,7 +257,7 @@ form_withメソッドのオプションには、modelオプションを指定し
 
 ```
 resourcesメソッドを使用すると、
-簡単に簡潔に必要なルーティング設定をすることができる。
+簡単に簡潔に必要なルーティングを設定することができる。
 
 ヘルパーメソッドの一つであるform_withメソッドを使用することで、
 必要なHTMLを素早く生成できる。
