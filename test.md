@@ -2,16 +2,16 @@
 
 ## 今回のテーマ
 
-以下のような、ブログを作成するための新規画面を作成する
+以下のような、ブログ作成用の新規画面を作成する
 
 [![https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65](https://t.gyazo.com/teams/diveintocode/f661a7b7cdf1e4e058077ccef3e20a65.png)](https://diveintocode.gyazo.com/f661a7b7cdf1e4e058077ccef3e20a65)
 
 ## 章の内容
-ブログを作成するための新規画面（`new`）に必要な
+ブログ作成用の新規画面（`new`）に必要な
 
-- ルーティングをRESTfulに沿って実装する。
-- アクション(new)を実装する。
-- 新規画面のフォームを`form_with`メソッドを使用して実装する。
+- ルーティングを`RESTful`に沿って実装する。
+- アクション(`new`)を実装する。
+- フォームを`form_with`メソッドを使用して実装する。
 
 ## RESTfulとは
 
@@ -55,7 +55,7 @@ https://railsguides.jp/routing.html#crud%E3%80%81%E5%8B%95%E8%A9%9E%E3%80%81%E3%
 
 resourcesメソッドとは、RESTfulなルーティングを自動生成するメソッドです。
 
-実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
+`resources :blogs`を`config/routes.rb`に追記したあと、実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
 
 ```
 dive_into_code:~/workspace/sample (master) $ rails routes
@@ -72,7 +72,7 @@ edit_blog GET    /blogs/:id/edit(.:format) blogs#edit
 
 index/create/new/edit/show/update/destroyそれぞれのアクションへのルーティングが生成されているのが分かります。
 
-このように、resourcesメソッドを使用することで、RESTfulに沿った7つのルーティングが自動的に生成されます。
+resourcesメソッドを使用することで、RESTfulな7つのルーティングが自動的に生成されます。
 
 ※updateへのroutingが2個生成されているのは、後の仕様でpatchが追加されたためです。特に気にする必要はありません。
 
@@ -87,7 +87,7 @@ Prefixを使用すると、link_toメソッド、renderメソッド、redirect�
 
 `Controller#Action`は、関連付けされたコントローラ名とアクション名を示しています。
 
-例えば、GET`メソッドで、/blogs/newのURLでリクエストが来た場合、Blogsコントローラーのnewアクションを選択するルーティングが作成できた、という見方ができます。
+例えば、GET`メソッドで、/blogs/newのURLでリクエストが来た場合、Blogsコントローラーのnewアクションへつなぐことができた、という見方ができます。
 
 [![https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51](https://t.gyazo.com/teams/diveintocode/7831da463339ea7bd5bc5290da60fe51.png)](https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51)
 
@@ -123,6 +123,7 @@ class BlogsController < ApplicationController
 
   # 追記する
   def new
+    @blog = Blog.new
   end
 end
 ```
@@ -171,7 +172,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 `form_with`メソッドを使用すると、以下のように簡単に記述できます。
 
 ```html
-<%= form_with(model: Blog.new) do |form| %>
+<%= form_with(model: @blog) do |form| %>
   <div class="blog_title">
     <%= form.label :title %>
     <%= form.text_field :title %>
@@ -211,7 +212,7 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 `app/views/blogs/new.html.erb`
 
 ```html
-<%= form_with(model: Blog.new, local: true) do |form| %>
+<%= form_with(model: @blog, local: true) do |form| %>
   <div class="blog_title">
     <%= form.label :title %>
     <%= form.text_field :title %>
@@ -224,8 +225,9 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 <% end %>
 ```
 
-`<%= form_with(model: Blog.new, local: true) do |form| %>`
-form_withメソッドには、Blog.new、つまりブログモデルのインスタンスを引数として渡しています。
+`<%= form_with(model: @blog, local: true) do |form| %>`
+form_withメソッドのオプションには、modelオプションを指定します。
+そして、引数として@blogを指定することで、自動的に
 そうすることで、`<form class="new_blog" id="new_blog" action="/blogs" accept-charset="UTF-8" method="post">`のように、POSTメソッドで`/blogs`URLにリクエストを送信するフォームを作成することができます。
 
 また、`form_with`メソッドは、デフォルトでJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを生成するようにします。(難しいので、この時点で理解できなくても問題ありません。)
@@ -262,7 +264,7 @@ form_withメソッドには、Blog.new、つまりブログモデルのインス
 resourcesメソッドを使用すると、
 簡単に簡潔に必要なルーティング設定をすることができる。
 
-ビューヘルパーの一種であるform_withメソッドを使用することで、
+ヘルパーメソッドの一つであるform_withメソッドを使用することで、
 必要なHTMLを素早く生成できる。
 ```
 
