@@ -17,7 +17,7 @@
 
 RESTfulを直訳すると、「RESTな性質をもつ」といった意味になります。
 
-ここで「REST」は、Webを設計するときのルールで、`リソースであるURLをHTTPメソッドと対応させることで、統一感のある分かりやすい設計にしよう`という決まりごとのことです。
+ここで「REST」とは、Webを構築するときの考え方の一つで、`リソースとなるURLをHTTPメソッドに対応させ、自由にCRUDできるものとして扱う考え方`といえます。
 
 よって「RESTful」とは、`上記のような決まりごとを守っているもの`、と考えられます。
 
@@ -27,10 +27,10 @@ RESTfulを直訳すると、「RESTな性質をもつ」といった意味にな
 
 Newには、次の役割があります。
 
-- 新規画面を表示させる
+- 新規画面を表示する
 - 入力された値をcreateに送る
 
-Newの機能を実現するために、Routing → Controller → Viewの順でコードを実装していきます。今回Modelの実装はありません。
+コードの実装は、Routing → Controller → Viewの順で進めます。今回Modelの実装はありません。
 
 ### Routing
 
@@ -55,7 +55,7 @@ https://railsguides.jp/routing.html#crud%E3%80%81%E5%8B%95%E8%A9%9E%E3%80%81%E3%
 
 resourcesメソッドとは、RESTfulなルーティングを自動生成するメソッドです。
 
-`resources :blogs`を`config/routes.rb`に追記したあと、実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
+`config/routes.rb`に`resources :blogs`を追記したあと、実際に`rails routes`コマンドをターミナルで実行して、確かめてみましょう。
 
 ```
 dive_into_code:~/workspace/sample (master) $ rails routes
@@ -87,7 +87,7 @@ Prefixを使用すると、link_toメソッド、renderメソッド、redirect�
 
 `Controller#Action`は、関連付けされたコントローラ名とアクション名を示しています。
 
-例えば、GET`メソッドで、/blogs/newのURLでリクエストが来た場合、Blogsコントローラーのnewアクションへつなぐことができた、という見方ができます。
+例えば、HTTPメソッドが`GET`、URLが`/blogs/new`のリクエストが送られてきた場合、送られてきたリクエストは、Blogsコントローラーのnewアクションへつなぐ準備ができた、という見方ができます。（実際には、Blogsコントローラーのnewアクションはまだ作成されていないので、つながってはいません。あくまで、つなぐ準備ができた段階です。）
 
 [![https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51](https://t.gyazo.com/teams/diveintocode/7831da463339ea7bd5bc5290da60fe51.png)](https://diveintocode.gyazo.com/7831da463339ea7bd5bc5290da60fe51)
 
@@ -108,11 +108,11 @@ get ‘/blogs/:id’, to: ‘blogs#show'
 
 resourcesメソッドを使用した場合は、`resources :blogs`の１行記述するのみでルーティングが作成されますので、簡潔に簡単に実装できるというメリットが、resourcesメソッドにはあります。
 
-これで、ブログのCRUD機能に必要なルーティングを実装することができました。
+これで、新規画面に必要なルーティングを実装することができました。
 
 ### Controller
 
-ルーティングを作成することができたので、次は、コントラーラのアクションを定義します。
+ルーティングを作成することができたので、次は、コントラーラに`new`アクションを定義します。
 
 `app/controllers/blogs_controller.rb`
 
@@ -132,20 +132,21 @@ end
 
 最後に、Viewを作成します。
 
-BlogsControllerのnewアクション（メソッド）が呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すので、`new.html.erb`を作成する必要があります。
+BlogsControllerのnewアクションが呼ばれた場合、Viewはデフォルトで`blogs/new.html.erb`を呼び出すことになっています。そのため、`views/blogs`に`new.html.erb`ファイルを作成する必要があります。
 
 ### form_withメソッド
 
-`blogs/new.html.erb`ファイルが作成できたところで、実際にフォームを作成していきますが、モデルと関連付けたフォームを作成するには、`form_with`メソッドがとても便利です。
+`new.html.erb`ファイルが作成できたら、実際にフォームを作成していきます。
+ここで、モデルと関連付けたフォームを作成するには、`form_with`メソッドを使用します。
 
-`form_with`メソッドは、ヘルパーメソッドの一つで、フォームの作成を簡単にします。
+`form_with`メソッドは、ヘルパーメソッドの一つで、簡単にフォームを作成できます。
 
 ```
 Rails 5.1より前のバージョンでは、【form_for】と【form_tag】の2種類のメソッドがありましたが、
 Rails 5.1ではこの2つのメソッドを【form_with】に統合してますので、今後は【form_with】メソッドを使用しましょう。
 ```
 
-`form_forとform_tagのform_withへの統合（Railsガイド）`
+`【form_for】と【form_tag】の【form_with】への統合（Railsガイド）`
 
 https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AEform-with%E3%81%B8%E3%81%AE%E7%B5%B1%E5%90%88
 
@@ -154,7 +155,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 
 [![https://diveintocode.gyazo.com/29f94c13d79371f31700c02cf95675e5](https://t.gyazo.com/teams/diveintocode/29f94c13d79371f31700c02cf95675e5.png)](https://diveintocode.gyazo.com/29f94c13d79371f31700c02cf95675e5)
 
-以下のHTMLを記述することになりますが、
+本来、次のようなHTMLを作成することになりますが、
 ```html
 <form action="/blogs" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="qbu8RFLhyCuAElg1qr7MLYDEdiEINJdEe1JLQFLr7kyWPFiHCEZKszOrvwON33s9CqGz7njGpBasOzrpYkb8/w==">
   <div class="blog_title">
@@ -169,7 +170,7 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 </form>
 ```
 
-`form_with`メソッドを使用すると、以下のように簡単に記述できます。
+`form_with`メソッドを使用すると、次のように簡単に記述でき、処理が実行されると上記で作成したHTMLを自動生成してくれます。
 
 ```html
 <%= form_with(model: @blog) do |form| %>
@@ -187,21 +188,19 @@ https://railsguides.jp/5_1_release_notes.html#form-for%E3%81%A8form-tag%E3%81%AE
 
 #### form_withの引数
 
-先ほど作成したフォームで、`form_with`メソッドは、次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定しています。
+`form_with`メソッドは、次のようにmodelオプションを設定し、その引数にモデルのインスタンスを設定しています。
 
 ```
-<%= form_with(model: Blog.new) %>
+<%= form_with(model: @blog) %>
 ```
 
 これは、Railsが、モデルオプションに設定したインスタンスを元に、行き先（どのようなリクエストを送るか）を自動で推測してくれます。
 
-ここでmodelオプションを使用しない場合を考えると、
+逆にmodelオプションを使用しない場合を考えると、次のように、`行き先URL`と`HTTPメソッド`を個別に指定する必要があります。
 
 ```
 <%= form_with(url: blogs_path, method: post) %>
 ```
-
-と、行き先URLとHTTPメソッドを個別に指定する必要があります。
 
 modelオプションを使用した方が、簡単でわかりやすいといったメリットがあります。
 
@@ -225,20 +224,21 @@ modelオプションを使用した方が、簡単でわかりやすいといっ
 <% end %>
 ```
 
+上から順にコードを見ていきましょう。
+
 `<%= form_with(model: @blog, local: true) do |form| %>`
 form_withメソッドのオプションには、modelオプションを指定します。
-そして、引数として@blogを指定することで、自動的に
-そうすることで、`<form class="new_blog" id="new_blog" action="/blogs" accept-charset="UTF-8" method="post">`のように、POSTメソッドで`/blogs`URLにリクエストを送信するフォームを作成することができます。
+引数として@blogを指定することで、Railsは自動的に`POST`メソッドで`/blogs`URLにリクエストを送信するフォームを作成します。
 
 また、`form_with`メソッドは、デフォルトでJavaScript用のリクエストが発生してしまうので、` local: true`とすることで、HTML用のリクエストを生成するようにします。(難しいので、この時点で理解できなくても問題ありません。)
 
-`do ~ end(ブロック)`の中に、用意されたメソッド`form.labelやform.submit`を使用することで、フォームに結びついたテキストフィールドやSubmitボタンを作成することが可能になります。
+`do ~ end`の中には、ラベルを生成する`form.label`、ボタンを生成する`form.submit`を使用することで、フォームに結びついたパーツを作成することができます。
 
-最後に、formタグとしてHTMLコードを生成するために、`form_with`メソッドは、`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
+最後に、formタグとしてのHTMLコードを生成するために、`form_with`メソッドを`<%=`で囲みます。`<%=`で囲まないと、HTMLコードは作成されず、フォームが画面に表示されなくなります。
 
 #### 各フォームパーツのメソッドについて
 
-`form.label`はHTMLのlabelタグを作成するメソッドです。
+`form.label`はHTMLのlabelタグを生成するメソッドです。
 
 `form.text_field`は、属性(type)をtextに指定した、HTMLのinputタグを作成するメソッドです。
 
